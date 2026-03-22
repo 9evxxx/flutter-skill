@@ -60,7 +60,7 @@ Opinionated Flutter architecture for iOS/Android apps. Feature-first structure, 
 - `CG-4` — Always use `--delete-conflicting-outputs` flag
 
 ### State Management (CRITICAL)
-- `SM-1` — Use annotation-based providers only (`@riverpod`, `@Riverpod`), never manual `Provider()` constructors
+- `SM-1` — Always use class-based Notifier with `build()` method (`@riverpod class X extends _$X`), never functional providers or manual `Provider()` constructors
 - `SM-2` — Screens with local state → `HookConsumerWidget`
 - `SM-3` — Stateless widgets with providers → `ConsumerWidget`
 - `SM-4` — `ref.watch()` in build for reactive UI, `ref.listen()` for side effects, `ref.read()` in callbacks only
@@ -253,7 +253,7 @@ class SomeWidget extends ConsumerWidget {
 }
 ```
 
-**Provider patterns** — always annotation-based with code generation:
+**Provider patterns** — always class-based Notifier with `build()` method:
 
 ```dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -262,8 +262,11 @@ part '[filename].g.dart';
 
 // Auto-dispose provider (default)
 @riverpod
-SomeType someProvider(Ref ref) {
-  return /* ... */;
+class SomeProvider extends _$SomeProvider {
+  @override
+  SomeType build() {
+    return /* ... */;
+  }
 }
 
 // Keep-alive provider (singleton)
@@ -297,8 +300,11 @@ class AppStorage extends _$AppStorage {
 
 // Provider with parameters (family)
 @Riverpod(keepAlive: true)
-FutureOr<SomeResult> someData(Ref ref, String param) async {
-  // ...
+class SomeData extends _$SomeData {
+  @override
+  FutureOr<SomeResult> build(String param) async {
+    // ...
+  }
 }
 ```
 
@@ -445,15 +451,18 @@ class DetailRoute extends GoRouteData {
 
 // Router provider
 @riverpod
-GoRouter router(Ref ref) {
-  return GoRouter(
-    initialLocation: '/home',
-    routes: $appRoutes,
-    redirect: (context, state) async {
-      // Auth/onboarding guards
-      return null;
-    },
-  );
+class Router extends _$Router {
+  @override
+  GoRouter build() {
+    return GoRouter(
+      initialLocation: '/home',
+      routes: $appRoutes,
+      redirect: (context, state) async {
+        // Auth/onboarding guards
+        return null;
+      },
+    );
+  }
 }
 ```
 
@@ -587,8 +596,11 @@ Text(context.l10n.settings)
 
 ```dart
 @Riverpod(keepAlive: true)
-Future<SharedPreferences> sharedPreferences(Ref ref) async {
-  return SharedPreferences.getInstance();
+class SharedPrefs extends _$SharedPrefs {
+  @override
+  Future<SharedPreferences> build() async {
+    return SharedPreferences.getInstance();
+  }
 }
 
 @Riverpod(keepAlive: true)
@@ -679,7 +691,8 @@ Add `.env` to `assets` in `pubspec.yaml` and to `.gitignore`. Provide `.env.exam
 | `ANTI-07` | `ref.read()` inside `build()` | `ref.watch()` for reactive UI |
 | `ANTI-08` | `ref.watch()` inside `onPressed` / callbacks | `ref.read()` in callbacks |
 | `ANTI-09` | `.value!` on async provider | `.when()` / `.maybeWhen()` |
-| `ANTI-10` | Manual `StateProvider()`, `StateNotifierProvider()` | `@riverpod` / `@Riverpod` annotations |
+| `ANTI-10` | Manual `StateProvider()`, `StateNotifierProvider()` | `@riverpod` / `@Riverpod` class-based Notifier |
+| `ANTI-10b` | Functional providers `someProvider(Ref ref)` | Class-based `class X extends _$X` with `build()` |
 | `ANTI-11` | Business logic inside widget `build()` | Logic in providers/notifiers |
 | `ANTI-12` | `ChangeNotifier` | Riverpod `Notifier` with code-gen |
 
@@ -969,19 +982,22 @@ class SearchScreen extends HookConsumerWidget {
 
 ```dart
 @riverpod
-GoRouter router(Ref ref) {
-  final isLoggedIn = ref.watch(authProvider);
+class Router extends _$Router {
+  @override
+  GoRouter build() {
+    final isLoggedIn = ref.watch(authProvider);
 
-  return GoRouter(
-    initialLocation: '/home',
-    routes: $appRoutes,
-    redirect: (context, state) {
-      final loggingIn = state.matchedLocation == '/login';
-      if (!isLoggedIn && !loggingIn) return '/login';
-      if (isLoggedIn && loggingIn) return '/home';
-      return null;
-    },
-  );
+    return GoRouter(
+      initialLocation: '/home',
+      routes: $appRoutes,
+      redirect: (context, state) {
+        final loggingIn = state.matchedLocation == '/login';
+        if (!isLoggedIn && !loggingIn) return '/login';
+        if (isLoggedIn && loggingIn) return '/home';
+        return null;
+      },
+    );
+  }
 }
 
 @Riverpod(keepAlive: true)
