@@ -74,8 +74,8 @@ This skill locks Claude into a single, opinionated, production-grade Flutter arc
 Inside Claude Code, run:
 
 ```
-/plugin marketplace add nextlevelbuilder/flutter-skill
-/plugin install flutter-skill@nextlevelbuilder-flutter-skill
+/plugin marketplace add 9evxxx/flutter-skill
+/plugin install flutter-skill@9evxxx-flutter-skill
 ```
 
 Or test without installing:
