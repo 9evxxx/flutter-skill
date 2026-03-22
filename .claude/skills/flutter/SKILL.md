@@ -82,8 +82,8 @@ Opinionated Flutter architecture for iOS/Android apps. Feature-first structure, 
 - `NM-5` — Dio interceptors for auth headers and error handling
 
 ### Routing (HIGH)
-- `RT-1` — GoRouter with typed routes, code-generated via `go_router_builder`
-- `RT-2` — Navigation: `DetailRoute(id: '123').push(context)` or `.go(context)`
+- `RT-1` — GoRouter with typed routes + `with $RouteName` mixin on every route class
+- `RT-2` — Navigation: `.push(context)` for forward, `.pushReplacement(context)` for replace, `context.pop()` for back. Never use `Navigator.*` or `.go()`
 - `RT-3` — `StatefulShellRoute` for bottom navigation tabs
 - `RT-4` — Router as Riverpod provider with redirect guards for auth
 
@@ -433,15 +433,15 @@ class AppShellRoute extends StatefulShellRouteData {
   }
 }
 
-// Tab routes
-class HomeRoute extends GoRouteData {
+// Tab routes — always use `with $RouteName` mixin
+class HomeRoute extends GoRouteData with $HomeRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) => const HomeScreen();
 }
 
 // Standalone routes with parameters
 @TypedGoRoute<DetailRoute>(path: '/detail')
-class DetailRoute extends GoRouteData {
+class DetailRoute extends GoRouteData with $DetailRoute {
   const DetailRoute({required this.id});
   final String id;
 
@@ -466,11 +466,12 @@ class Router extends _$Router {
 }
 ```
 
-**Navigation usage:**
+**Navigation usage — GoRouter only, never Navigator.*:**
 
 ```dart
-DetailRoute(id: '123').push(context);  // Push
-HomeRoute().go(context);               // Replace stack
+DetailRoute(id: '123').push(context);              // Forward navigation
+CoinRoute(id: id).pushReplacement(context);        // Replace current screen
+context.pop();                                      // Back navigation
 ```
 
 ### Responsive UI — FlutterScreenUtil
@@ -714,6 +715,13 @@ Add `.env` to `assets` in `pubspec.yaml` and to `.gitignore`. Provide `.env.exam
 | `ANTI-21` | `json['name']` manual parsing | Freezed `fromJson` |
 | `ANTI-22` | Missing `@JsonKey` for snake_case fields | `@JsonKey(name: 'field_name')` |
 | `ANTI-23` | `Dio()` created inside widget | Dio as Riverpod provider |
+
+### Routing
+| ID | Wrong | Right |
+|----|-------|-------|
+| `ANTI-27` | `Navigator.push()`, `Navigator.pop()` | GoRouter `.push(context)`, `context.pop()` |
+| `ANTI-28` | `.go(context)` (clears entire stack) | `.push(context)` or `.pushReplacement(context)` |
+| `ANTI-29` | Route class without `with $RouteName` mixin | `class XRoute extends GoRouteData with $XRoute` |
 
 ### Code Generation
 | ID | Wrong | Right |
@@ -1075,7 +1083,87 @@ class ImageUploader extends _$ImageUploader {
 }
 ```
 
-### 11. Skeleton Loading
+### 11. Service Singleton (Analytics, Payments, etc.)
+
+```dart
+// Abstract interface
+abstract class AnalyticService {
+  Future<void> initialize();
+  Future<void> logEvent(String name, [Map<String, Object>? properties]);
+  Future<String?> getUserId();
+}
+
+// Singleton implementation
+class FirebaseAnalyticsService implements AnalyticService {
+  FirebaseAnalyticsService._();
+  static final FirebaseAnalyticsService instance = FirebaseAnalyticsService._();
+
+  FirebaseAnalytics? _analytics;
+
+  @override
+  Future<void> initialize() async {
+    if (_analytics != null) return;
+    _analytics = FirebaseAnalytics.instance;
+  }
+
+  @override
+  Future<void> logEvent(String name, [Map<String, Object>? properties]) async {
+    await _analytics?.logEvent(name: name, parameters: properties);
+  }
+
+  @override
+  Future<String?> getUserId() async {
+    return _analytics?.appInstanceId;
+  }
+}
+
+// Initialize in main()
+await FirebaseAnalyticsService.instance.initialize();
+```
+
+### 12. Heavy Computation in Isolate (`compute()`)
+
+```dart
+import 'package:flutter/foundation.dart';
+
+// Provider that offloads work to isolate
+@riverpod
+class ImageProcessor extends _$ImageProcessor {
+  @override
+  Uint8List? build() => null;
+
+  Future<Uint8List> processImage(Uint8List bytes, Rect cropRect) async {
+    final result = await compute(_processInIsolate, {
+      'bytes': bytes,
+      'left': cropRect.left,
+      'top': cropRect.top,
+      'width': cropRect.width,
+      'height': cropRect.height,
+    });
+    state = result;
+    return result;
+  }
+}
+
+// Top-level function (required for compute())
+Uint8List _processInIsolate(Map<String, dynamic> data) {
+  final bytes = data['bytes'] as Uint8List;
+  final decoded = img.decodeImage(bytes)!;
+  final baked = img.bakeOrientation(decoded);
+  final cropped = img.copyCrop(
+    baked,
+    x: data['left'].toInt(),
+    y: data['top'].toInt(),
+    width: data['width'].toInt(),
+    height: data['height'].toInt(),
+  );
+  return Uint8List.fromList(img.encodeJpg(cropped, quality: 80));
+}
+```
+
+**Rule**: Any operation >16ms (image processing, JSON parsing large payloads, crypto) MUST run in `compute()` to avoid UI jank. The function passed to `compute()` must be top-level or static.
+
+### 13. Skeleton Loading
 
 ```dart
 // Inside .when() loading branch
@@ -1091,7 +1179,7 @@ Container(
   .shimmer(duration: 1200.ms, color: AppColors.textSecondary.withValues(alpha: 0.1)),
 ```
 
-### 12. Empty State
+### 14. Empty State
 
 ```dart
 // Inside .when() data branch, when data.isEmpty
@@ -1138,8 +1226,8 @@ Center(
 - [ ] No `StatefulWidget` + `setState` for shared state
 
 ### Navigation
-- [ ] Routes use typed GoRoute classes
-- [ ] Navigation via `.push(context)` / `.go(context)` on route objects
+- [ ] Routes use typed GoRoute classes with `with $RouteName` mixin
+- [ ] Navigation via `.push(context)` / `.pushReplacement(context)`, no `.go()` or `Navigator.*`
 - [ ] New routes registered in router, build_runner re-run
 
 ---
