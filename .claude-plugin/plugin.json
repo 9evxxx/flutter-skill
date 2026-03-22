@@ -1,0 +1,26 @@
+{
+  "name": "flutter-skill",
+  "description": "Opinionated Flutter mobile development skill for Claude Code. Feature-first architecture, Riverpod+Hooks, GoRouter, Retrofit+Dio, Freezed, ScreenUtil, and more. Includes workflow, anti-patterns, common patterns, and pre-delivery checklist.",
+  "version": "1.0.0",
+  "author": {
+    "name": "nextlevelbuilder"
+  },
+  "license": "MIT",
+  "keywords": [
+    "flutter",
+    "dart",
+    "mobile",
+    "ios",
+    "android",
+    "riverpod",
+    "hooks",
+    "go-router",
+    "retrofit",
+    "dio",
+    "freezed",
+    "screenutil",
+    "claude-code",
+    "skill"
+  ],
+  "skills": ["./.claude/skills/flutter"]
+}
