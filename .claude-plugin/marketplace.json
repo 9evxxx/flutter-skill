@@ -1,0 +1,28 @@
+{
+  "name": "flutter-skill",
+  "owner": {
+    "name": "9evxxx"
+  },
+  "metadata": {
+    "description": "Opinionated Flutter mobile development skill for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "flutter-skill",
+      "source": "./",
+      "description": "Opinionated Flutter mobile development skill. Feature-first architecture, Riverpod+Hooks, GoRouter, Retrofit+Dio, Freezed, ScreenUtil. 37 rules, 26 anti-patterns, 12 ready-made patterns, workflow, and pre-delivery checklist.",
+      "version": "1.0.0",
+      "author": {
+        "name": "9evxxx"
+      },
+      "keywords": [
+        "flutter", "dart", "mobile", "ios", "android",
+        "riverpod", "hooks", "go-router", "retrofit", "dio",
+        "freezed", "screenutil", "claude-code", "skill"
+      ],
+      "category": "development",
+      "strict": false
+    }
+  ]
+}
