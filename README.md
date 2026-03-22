@@ -13,10 +13,10 @@ This skill locks Claude into a single, opinionated, production-grade Flutter arc
 **What changes when the skill is active:**
 
 - Claude follows a **strict workflow** — models first, then API layer, then providers, then UI, then routes, then build_runner. Every time.
-- Claude checks **37 prioritized rules** before writing code — code generation rules are CRITICAL, styling rules are LOW. It knows what matters most.
-- Claude avoids **26 specific anti-patterns** — no `ref.read()` in `build()`, no `StatefulWidget` for shared state, no hardcoded dimensions, no manual JSON parsing.
-- Claude has **12 ready-made patterns** for the things you actually build — pagination, forms, search with debounce, auth guards, image uploads, pull-to-refresh.
-- Claude runs a **pre-delivery checklist** before handing code back — build_runner, dart analyze, ScreenUtil on all dimensions, localization, file placement.
+- Claude checks **43 prioritized rules** before writing code — code generation rules are CRITICAL, styling rules are LOW. It knows what matters most.
+- Claude avoids **30 specific anti-patterns** — no `ref.read()` in `build()`, no `StatefulWidget` for shared state, no hardcoded dimensions, no manual JSON parsing.
+- Claude has **14 ready-made patterns** for the things you actually build — pagination, forms, search with debounce, auth guards, image uploads, pull-to-refresh, service singletons, isolate computation.
+- Claude runs a **pre-delivery checklist** of **18 quality gates** before handing code back — build_runner, dart analyze, ScreenUtil on all dimensions, localization, file placement.
 
 ## Stack
 
@@ -43,16 +43,16 @@ This skill locks Claude into a single, opinionated, production-grade Flutter arc
 - **Step-by-Step Workflow** — deterministic process for creating features and modifying code
 
 ### Reference
-- **37 Quick Reference Rules** — compact rules with IDs (CG-*, SM-*, PS-*, NM-*, RT-*, RU-*, LA-*, TS-*, CS-*)
+- **43 Quick Reference Rules** — compact rules with IDs (CG-*, SM-*, PS-*, NM-*, RT-*, RU-*, LA-*, TS-*, CS-*)
 - **Project Structure** — feature-first architecture with complete directory tree and naming conventions
 - **Full Tech Stack Reference** — code examples for every layer of the stack
 
 ### Guard Rails
-- **26 Anti-Patterns** — architecture, state management, UI, networking, and code generation mistakes to avoid
-- **Pre-Delivery Checklist** — 17 quality gates across Build, Architecture, UI, State, and Navigation
+- **30 Anti-Patterns** — architecture, state management, UI, networking, routing, and code generation mistakes to avoid
+- **Pre-Delivery Checklist** — 18 quality gates across Build, Architecture, UI, State, and Navigation
 
 ### Ready-Made Patterns
-12 copy-paste solutions for real-world tasks:
+14 copy-paste solutions for real-world tasks:
 
 | # | Pattern | What it solves |
 |---|---------|---------------|
@@ -66,8 +66,10 @@ This skill locks Claude into a single, opinionated, production-grade Flutter arc
 | 8 | Local Storage Toggle | SharedPreferences + Riverpod for theme/locale |
 | 9 | Dio Error Interceptor | Global 401/500 handling |
 | 10 | Image Upload | Multipart upload with progress tracking |
-| 11 | Skeleton Loading | Shimmer animation for loading states |
-| 12 | Empty State | Placeholder UI when data list is empty |
+| 11 | Service Singleton | Abstract interface + singleton for analytics, payments, etc. |
+| 12 | Heavy Computation | `compute()` isolate for image processing, large JSON, crypto |
+| 13 | Skeleton Loading | Shimmer animation for loading states |
+| 14 | Empty State | Placeholder UI when data list is empty |
 
 ## Install
 
