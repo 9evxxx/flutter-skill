@@ -1,7 +1,7 @@
 {
   "name": "flutter-skill",
-  "description": "Opinionated Flutter mobile development skill for Claude Code. Feature-first architecture, Riverpod+Hooks, GoRouter, Retrofit+Dio, Freezed, ScreenUtil, and more. Includes workflow, anti-patterns, common patterns, and pre-delivery checklist.",
-  "version": "1.0.0",
+  "description": "Opinionated Flutter mobile development skill for Claude Code. Feature-first architecture, Riverpod+Hooks, GoRouter, Retrofit+Dio, Freezed, ScreenUtil, testing, error handling, caching, WebSocket. 60 rules, 41 anti-patterns, 25 patterns, 29 quality gates. Separate integration guides skill (Sentry, Firebase, Supabase, Amplitude) — loaded only when needed.",
+  "version": "2.0.0",
   "author": {
     "name": "9evxxx"
   },
@@ -22,5 +22,5 @@
     "claude-code",
     "skill"
   ],
-  "skills": ["./.claude/skills/flutter"]
+  "skills": ["./.claude/skills/flutter", "./.claude/skills/flutter-integrations"]
 }

@@ -11,8 +11,8 @@
     {
       "name": "flutter-skill",
       "source": "./",
-      "description": "Opinionated Flutter mobile development skill. Feature-first architecture, Riverpod+Hooks, GoRouter, Retrofit+Dio, Freezed, ScreenUtil. 37 rules, 26 anti-patterns, 12 ready-made patterns, workflow, and pre-delivery checklist.",
-      "version": "1.0.0",
+      "description": "Opinionated Flutter mobile development skill. Feature-first architecture, Riverpod+Hooks, GoRouter, Retrofit+Dio, Freezed, ScreenUtil, testing, error handling, caching, WebSocket. 60 rules, 41 anti-patterns, 25 ready-made patterns, 29-point pre-delivery checklist. Separate integrations skill (Sentry, Firebase, Supabase, Amplitude) — loaded on demand.",
+      "version": "2.0.0",
       "author": {
         "name": "9evxxx"
       },
